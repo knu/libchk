@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons$
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.1.1.1 2002/09/02 08:50:22 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -49,6 +49,7 @@ def init_global
     "/bin",
     "/sbin",
     "/usr/bin",
+    "/usr/games",
     "/usr/libexec",
     "/usr/sbin",
     "#{$localbase}/bin",
