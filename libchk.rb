@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.6 2002/09/03 13:31:56 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.7 2002/12/16 06:27:25 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -222,7 +222,7 @@ def scan_libs
 
     case line
     when /^search directories:\s*(.*)/
-      libdirs = $1.split(':')
+      libdirs = normalize_dirs!($1.split(':'))
     when %r"^\d+:-l.*\s+=>\s+(/.*/([^/]+))"
       path, filename = $1, $2
 
@@ -265,18 +265,26 @@ def dir_include?(dir1, dir2)
 end
 
 def normalize_dir!(dir)
-  dir.tr_s!('/', '/')
+  # handle sequences of /'s (tr_s is not multibyte-aware, hence gsub)
+  dir.gsub!(%r"//+", '/')
   dir.replace(File.expand_path(dir))
 
   return dir if dir == '/'
 
   dir.chomp!('/')
 
-  if File.directory?(File.join(dir, '.'))
+  if File.directory?(dir)
     dir
   else
     nil
   end
+end
+
+def normalize_dirs!(dirs)
+  dirs.reject! { |dir|
+    normalize_dir!(dir).nil?
+  }
+  dirs
 end
 
 def locate_file(file, dirs)
@@ -300,7 +308,7 @@ def get_libdep(file)
     when /^NEEDED\s+(.*)/
       dep << $1
     when /^RPATH\s+(.*)/
-      rpath = $1.split(':')
+      rpath = normalize_dirs!($1.split(':'))
     end
   }
 
@@ -324,9 +332,7 @@ def get_libdep(file)
 end
 
 def compact_dirs!(dirs)
-  dirs.reject! { |dir|
-    normalize_dir!(dir).nil?
-  }
+  normalize_dirs!(dirs)
   dirs.sort!
 
   prev = nil
