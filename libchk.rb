@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.5 2002/09/03 10:28:26 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.6 2002/09/03 13:31:56 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -225,6 +225,9 @@ def scan_libs
       libdirs = $1.split(':')
     when %r"^\d+:-l.*\s+=>\s+(/.*/([^/]+))"
       path, filename = $1, $2
+
+      # handle sequences of /'s (tr_s is not multibyte-aware, hence gsub)
+      path.gsub!(%r"//+", '/')
 
       libtable[filename] = path
     end
