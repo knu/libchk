@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.3 2002/09/02 10:17:40 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.4 2002/09/02 12:33:26 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -90,9 +90,7 @@ usage: #{MYNAME} [-sv] [-x dir] [dir ...]
 
     opts.def_option("-x", "--exclude=DIR", "Exclude the given directory") {
       |dir|
-      if dir = normalize_dir(dir)
-	$exclude_dirs << dir
-      end
+      $exclude_dirs << dir
     }
 
     opts.def_tail_option '
@@ -121,9 +119,9 @@ Environment Variables [default]:
 
   dirs = $bindirs | ENV['PATH'].split(':') | $libdirs | argv
 
-  dirs = compact_dirs(dirs)
+  compact_dirs!(dirs)
 
-  $exclude_dirs = compact_dirs($exclude_dirs)
+  compact_dirs!($exclude_dirs)
 
   # ignore exclude directories that are irrelevant
   $exclude_dirs.reject! { |xdir|
@@ -145,6 +143,8 @@ Environment Variables [default]:
       dir_include?(dir, xdir)
     }
   }
+
+  # the directory list and the exclude list are now optimized
 
   puts "Will look into:"
 
@@ -253,14 +253,16 @@ def dir_include?(dir1, dir2)
 
   len = dir1.size
 
-  return dir2[len] == ?/ && dir2[0...len] == dir1
+  (dir2[len] == ?/ || dir2.size == len) && dir2[0...len] == dir1
 end
 
-def normalize_dir(dir)
-  return '/' if dir == '/'
+def normalize_dir!(dir)
+  dir.tr_s!('/', '/')
+  dir.replace(File.expand_path(dir))
 
-  dir = dir.tr_s('/', '/')
-  dir.chop! if dir[-1] == ?/
+  return dir if dir == '/'
+
+  dir.chomp!('/')
 
   if File.directory?(File.join(dir, '.'))
     dir
@@ -313,27 +315,20 @@ def get_libdep(file)
   deptable
 end
 
-def compact_dirs(dirs)
-  newdirs = []
-
-  dirs.each { |dir|
-    return ['/'] if dir == '/'
-
-    dir = normalize_dir(dir) or next
-
-    newdirs << dir
+def compact_dirs!(dirs)
+  dirs.reject! { |dir|
+    normalize_dir!(dir).nil?
   }
-
-  newdirs.sort!
+  dirs.sort!
 
   prev = nil
 
-  newdirs.select { |dir|
+  dirs.reject! { |dir|
     if prev && dir_include?(prev, dir)
-      false
+      true
     else
       prev = dir
-      true
+      false
     end
   }
 end
