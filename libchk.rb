@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.1.1.1 2002/09/02 08:50:22 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.2 2002/09/02 09:58:05 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -232,6 +232,11 @@ def dead_link?(file)
 end
 
 def binary?(file)
+  if !File.readable?(file)
+    STDERR.puts "Unreadable file or directory: #{file}"
+    return false
+  end
+
   File.symlink?(file) || !File.file?(file) and return false
 
   check_elfbrand(file)
