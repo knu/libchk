@@ -1,4 +1,4 @@
-.\" $Idaemons$
+.\" $Idaemons: /home/cvs/libchk/libchk.1,v 1.1 2002/09/02 10:37:40 knu Exp $
 .\"
 .Dd September 2, 2002
 .Dt LIBCHK 1
@@ -61,6 +61,32 @@ When it is done though all directories,
 lists the shared libraries in the library search path that are not
 referenced by (linked with) any executables.
 .Pp
+.Sh WARNING
+Do not blindly delete libraries that
+.Nm
+reports as unreferenced, because there are many reasons that
+.Nm
+cannot perfectly detect if a shared library is referenced by:
+.Bl -dash -offset indent
+.It
+A library may be referenced by an executable hidden under a user
+directory or an application specific directory.
+.Pp
+.It
+A library may be put there for future use.
+.Pp
+.It
+A library on an NFS exported or NFS mounted file system may be
+referenced by an executable on another host.
+.Pp
+.It
+A library can be dynamically linked with by calling
+.Xr dlopen 3 ,
+which
+.Nm
+can never detect.
+.El
+.Pp
 .Sh OPTIONS
 The following command line arguments are supported:
 .Pp
@@ -98,14 +124,6 @@ The X11 base directory. (default:
 .Xr ldconfig 8
 .Sh BUGS
 .Bl -dash -compact
-.It
-There is always a possibility that any library can be dynamically
-linked with by calling
-.Xr dlopen 3 ,
-which
-.Nm
-can never detect.
-.Pp
 .It
 Currently,
 .Nm
