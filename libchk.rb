@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.4 2002/09/02 12:33:26 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.5 2002/09/03 10:28:26 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -161,7 +161,12 @@ Environment Variables [default]:
   end
 
   Find.find(*dirs) { |file|
-    next if $exclude_dirs.detect { |xdir| dir_include?(xdir, file) }
+    xdir = nil
+
+    if $exclude_dirs.detect { |xdir| dir_include?(xdir, file) }
+      $exclude_dirs.delete(xdir)
+      Find.prune
+    end
 
     next if !binary?(file)
 
@@ -253,7 +258,7 @@ def dir_include?(dir1, dir2)
 
   len = dir1.size
 
-  (dir2[len] == ?/ || dir2.size == len) && dir2[0...len] == dir1
+  (dir2[len] == ?/ && dir2[0...len] == dir1) || (dir1 == dir2)
 end
 
 def normalize_dir!(dir)
