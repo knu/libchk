@@ -1,0 +1,117 @@
+.\" $Idaemons$
+.\"
+.Dd September 2, 2002
+.Dt LIBCHK 1
+.Os FreeBSD
+.Sh NAME
+.Nm libchk
+.Nd a tool to check shared library links
+.Sh SYNOPSIS
+.Nm
+.Op Fl hsv
+.Op Fl x Ar directory
+.Op Ar directory ...
+.Sh DESCRIPTION
+.Nm
+is a tool to help users find out the following files:
+.Bl -dash -column -compact -offset indent
+.It
+Executables that have unresolvable shared library links
+.It
+Shared libraries that are not referenced by any executables
+.El
+.Pp
+Directories that
+.Nm
+searches for executables and libraries include:
+.Bl -column -compact -offset indent
+.It Pa /bin
+.It Pa /sbin
+.It Pa /usr/bin
+.It Pa /usr/games
+.It Pa /usr/libexec
+.It Pa /usr/sbin
+.It Pa $LOCALBASE/bin
+.It Pa $LOCALBASE/lib
+.It Pa $LOCALBASE/libexec
+.It Pa $LOCALBASE/sbin
+.It Pa $X11BASE/bin
+.It Pa $X11BASE/lib
+.It Pa $X11BASE/libexec
+.It Pa $X11BASE/sbin
+.El
+.Pp
+And the directories listed in
+.Ev PATH ,
+as well as the library search path that
+.Xr ldconfig 8
+tells.  In addition, a user can specify additional directories to
+search via the command line.
+.Pp
+e.g.:
+.Dl $ libchk /home/*/bin
+.Pp
+.Nm
+recursively looks into those directories and checks shared library
+links for each binary.  If a dead library link is found, it is
+immediately reported.
+.Pp
+When it is done though all directories,
+.Nm
+lists the shared libraries in the library search path that are not
+referenced by (linked with) any executables.
+.Pp
+.Sh OPTIONS
+The following command line arguments are supported:
+.Pp
+makes
+.Nm
+report it as well.
+.Pp
+.It Fl v
+.It Fl -verbose
+Make a detailed report.
+.Nm
+will also check and report what executables and libraries each library
+is referenced (used) by.
+.Pp
+.It Fl x Ar directory
+.It Fl -exclude Ar directory
+Exclude the specified directory from the list of directories that
+.Nm
+searches for executables and libraries.
+.It Ar directory ...
+Additional directories to search for binaries.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width "LOCALBASE" -compact
+.It Ev PATH
+The command search path.
+.It Ev LOCALBASE
+The local base directory. (default:
+.Pa /usr/local )
+.It Ev X11BASE
+The X11 base directory. (default:
+.Pa /usr/X11R6 )
+.El
+.Sh SEE ALSO
+.Xr ldconfig 8
+.Sh BUGS
+.Bl -dash -compact
+.It
+There is always a possibility that any library can be dynamically
+linked with by calling
+.Xr dlopen 3 ,
+which
+.Nm
+can never detect.
+.Pp
+.It
+Currently,
+.Nm
+only checks
+.Fx
+ELF executables and libraries.
+.El
+.Sh AUTHORS
+.An Akinori MUSHA Aq knu@iDaemons.org
