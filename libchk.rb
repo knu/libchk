@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.2 2002/09/02 09:58:05 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.3 2002/09/02 10:17:40 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -97,6 +97,7 @@ usage: #{MYNAME} [-sv] [-x dir] [dir ...]
 
     opts.def_tail_option '
 Environment Variables [default]:
+    PATH             command search path
     LOCALBASE        local base directory [/usr/local]
     X11BASE          X11 base directory [/usr/X11R6]'
 
