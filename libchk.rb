@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- ruby -*-
 #
-# Copyright (c) 2001, 2002 Akinori MUSHA
+# Copyright (c) 2001-2004 Akinori MUSHA
 #
 # All rights reserved.
 #
@@ -27,7 +27,7 @@
 # SUCH DAMAGE.
 #
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.7 2002/12/16 06:27:25 knu Exp $
+RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.8 2002/12/16 07:14:00 knu Exp $
 RCS_REVISION = RCS_ID.split[2]
 MYNAME = File.basename($0)
 
@@ -117,7 +117,9 @@ Environment Variables [default]:
     $librevtable[file] = nil
   }
 
-  dirs = $bindirs | ENV['PATH'].split(':') | $libdirs | argv
+  dirs = ($bindirs | ENV['PATH'].split(':') | $libdirs | argv).map { |dir|
+    dir.dup
+  }
 
   compact_dirs!(dirs)
 
