@@ -302,6 +302,10 @@ def normalize_dirs!(dirs)
 end
 
 def locate_file(file, dirs)
+  if file[0] == ?/
+    return File.exist?(file) ? file : nil
+  end
+
   dirs.each { |dir|
     path = File.join(dir, file)
 
