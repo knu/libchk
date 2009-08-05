@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 # -*- ruby -*-
 #
-# Copyright (c) 2001-2004 Akinori MUSHA
+# libchk - checks shared library links of binaries
+#
+# Copyright (c) 2001-2004, 2009 Akinori MUSHA
 #
 # All rights reserved.
 #
@@ -26,13 +28,22 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+# $Id$
 
-RCS_ID = %q$Idaemons: /home/cvs/libchk/libchk.rb,v 1.8 2002/12/16 07:14:00 knu Exp $
-RCS_REVISION = RCS_ID.split[2]
+if RUBY_VERSION < "1.8.7"
+  STDERR.puts "Ruby 1.8.7 or later is required."
+  exit 255
+end
+
+MYVERSION = "1.10.0"
+MYREVISION = %w$Rev$[1]
+MYDATE = %w$Date$[1]
 MYNAME = File.basename($0)
 
 require 'optparse'
 require 'find'
+require 'pathname'
+require 'shellwords'
 
 LDCONFIG_CMD = '/sbin/ldconfig -elf'
 OBJDUMP_CMD = '/usr/bin/objdump'
@@ -69,7 +80,8 @@ usage: #{MYNAME} [-sv] [-x dir] [dir ...]
   EOF
 
   banner = <<-"EOF"
-#{MYNAME} rev.#{RCS_REVISION}
+#{MYNAME} - checks shared library links of binaries
+  version #{MYVERSION} [revision #{MYREVISION}] (#{MYDATE})
 
 #{usage}
   EOF
@@ -117,7 +129,7 @@ Environment Variables [default]:
     $librevtable[file] = nil
   }
 
-  dirs = ($bindirs | ENV['PATH'].split(':') | $libdirs | argv).map { |dir|
+  dirs = (ENV['PATH'].split(':') | argv | $bindirs | libdirs).map { |dir|
     dir.dup
   }
 
@@ -255,7 +267,7 @@ end
 
 def check_elfbrand(file)
   /^File '.*' is of brand 'FreeBSD' \(9\)/ =~
-    `#{BRANDELF_CMD} #{file} 2>/dev/null`
+    `#{BRANDELF_CMD} #{file.shellescape} 2>/dev/null`
 end
 
 def dir_include?(dir1, dir2)
@@ -303,7 +315,7 @@ def get_libdep(file)
   dep = []
   rpath = []
 
-  `#{OBJDUMP_CMD} -p "#{file}" 2>/dev/null`.each { |line|
+  `#{OBJDUMP_CMD} -p #{file.shellescape} 2>/dev/null`.each { |line|
     line.strip!
 
     case line
@@ -335,11 +347,17 @@ end
 
 def compact_dirs!(dirs)
   normalize_dirs!(dirs)
-  dirs.sort!
+
+  newdirs = dirs.group_by { |dir|
+    Pathname(dir).realpath
+  }.map { |realpath, ldirs|
+    ldirs.first
+  }
+
+  newdirs.sort!
 
   prev = nil
-
-  dirs.reject! { |dir|
+  newdirs.reject! { |dir|
     if prev && dir_include?(prev, dir)
       true
     else
@@ -347,6 +365,8 @@ def compact_dirs!(dirs)
       false
     end
   }
+
+  dirs.replace(newdirs)
 end
 
 main(ARGV)

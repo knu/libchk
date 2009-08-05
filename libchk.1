@@ -1,11 +1,11 @@
-.\" $Idaemons: /home/cvs/libchk/libchk.1,v 1.5 2002/11/12 06:48:24 knu Exp $
+.\" $Id$
 .\"
 .Dd September 2, 2002
 .Dt LIBCHK 1
 .Os FreeBSD
 .Sh NAME
 .Nm libchk
-.Nd a tool to check shared library links
+.Nd checks shared library links of binaries
 .Sh SYNOPSIS
 .Nm
 .Op Fl hsv
@@ -51,6 +51,9 @@ search via the command line.
 .Pp
 e.g.:
 .Dl $ libchk /home/*/bin
+.Pp
+The directory list is automatically optimized to avoid duplicated
+search.
 .Pp
 .Nm
 recursively looks into those directories and checks shared library
