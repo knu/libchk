@@ -129,7 +129,7 @@ Environment Variables [default]:
     $librevtable[file] = nil
   }
 
-  dirs = (ENV['PATH'].split(':') | argv | $bindirs | libdirs).map { |dir|
+  dirs = (ENV['PATH'].split(':') | argv | $bindirs | $libdirs).map { |dir|
     dir.dup
   }
 
