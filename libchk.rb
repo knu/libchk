@@ -3,7 +3,7 @@
 #
 # libchk - checks shared library links of binaries
 #
-# Copyright (c) 2001-2004, 2009 Akinori MUSHA
+# Copyright (c) 2001-2004, 2009, 2011 Akinori MUSHA
 #
 # All rights reserved.
 #
@@ -36,8 +36,6 @@ if RUBY_VERSION < "1.8.7"
 end
 
 MYVERSION = "1.10.1"
-MYREVISION = %w$Rev$[1]
-MYDATE = %w$Date$[1]
 MYNAME = File.basename($0)
 
 require 'optparse'
@@ -81,7 +79,7 @@ usage: #{MYNAME} [-sv] [-x dir] [dir ...]
 
   banner = <<-"EOF"
 #{MYNAME} - checks shared library links of binaries
-  version #{MYVERSION} [revision #{MYREVISION}] (#{MYDATE})
+  version #{MYVERSION}
 
 #{usage}
   EOF
