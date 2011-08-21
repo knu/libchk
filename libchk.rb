@@ -91,11 +91,11 @@ usage: #{MYNAME} [-sv] [-x dir] [dir ...]
     }
 
     opts.def_option("-s", "--strict", "Perform stricter checks") {
-      |$strict|
+      $strict = true
     }
 
     opts.def_option("-v", "--verbose", "Make a detailed report") {
-      |$detailed|
+      $detailed = true
     }
 
     opts.def_option("-x", "--exclude=DIR", "Exclude the given directory") {
@@ -229,7 +229,7 @@ def scan_libs
 
   libtable = {}
 
-  `#{LDCONFIG_CMD} -r`.each { |line|
+  `#{LDCONFIG_CMD} -r`.each_line { |line|
     line.strip!
 
     case line
@@ -317,7 +317,7 @@ def get_libdep(file)
   dep = []
   rpath = []
 
-  `#{OBJDUMP_CMD} -p #{file.shellescape} 2>/dev/null`.each { |line|
+  `#{OBJDUMP_CMD} -p #{file.shellescape} 2>/dev/null`.each_line { |line|
     line.strip!
 
     case line
