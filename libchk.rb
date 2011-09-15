@@ -35,6 +35,10 @@ if RUBY_VERSION < "1.8.7"
   exit 255
 end
 
+if defined?(Encoding)
+  Encoding.default_external = Encoding::ASCII_8BIT
+end
+
 MYVERSION = "1.10.2"
 MYNAME = File.basename($0)
 
