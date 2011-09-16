@@ -39,7 +39,7 @@ if defined?(Encoding)
   Encoding.default_external = Encoding::ASCII_8BIT
 end
 
-MYVERSION = "1.10.2"
+MYVERSION = "1.10.3"
 MYNAME = File.basename($0)
 
 require 'optparse'
